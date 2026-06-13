@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-paper: 243 240 232;
+  --color-ink: 17 17 17;
+  --color-muted: 119 115 107;
+  --color-line: 201 194 182;
+  --color-signal: 179 38 30;
+  --color-archive: 31 63 91;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: rgb(var(--color-paper));
+  color: rgb(var(--color-ink));
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background:
+    linear-gradient(rgb(var(--color-ink) / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(var(--color-ink) / 0.025) 1px, transparent 1px),
+    rgb(var(--color-paper));
+  background-size: 48px 48px, 48px 48px, auto;
+  font-family: "Suisse Intl", "Neue Haas Grotesk Text", "Helvetica Neue", sans-serif;
+}
+
+::selection {
+  background: rgb(var(--color-signal));
+  color: rgb(var(--color-paper));
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+@layer components {
+  .meta {
+    @apply font-mono text-[11px] uppercase tracking-meta text-muted;
+  }
+
+  .frame {
+    @apply border border-ink/20 bg-paper shadow-frame;
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal;
+  }
+}
