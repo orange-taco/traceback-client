@@ -18,8 +18,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { product, entry };
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  { title: data ? `${data.product.name} / TRACEBACK` : "TRACEBACK" },
+export const meta: MetaFunction<typeof loader> = ({ loaderData }) => [
+  { title: loaderData ? `${loaderData.product.name} / TRACEBACK` : "TRACEBACK" },
 ];
 
 export default function ProductDetailRoute() {
