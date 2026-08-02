@@ -12,8 +12,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
   };
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  { title: data ? `${data.orderNumber} / TRACEBACK` : "TRACEBACK" },
+export const meta: MetaFunction<typeof loader> = ({ loaderData }) => [
+  { title: loaderData ? `${loaderData.orderNumber} / TRACEBACK` : "TRACEBACK" },
 ];
 
 export default function OrderDetailRoute() {
