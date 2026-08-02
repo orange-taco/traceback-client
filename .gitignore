@@ -8,3 +8,5 @@ node_modules
 !.env.example
 .DS_Store
 .idea
+/AGENTS.md
+/AGENTS_korea.md
