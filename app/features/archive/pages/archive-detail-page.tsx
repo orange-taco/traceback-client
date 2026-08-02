@@ -17,8 +17,8 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { entry, relatedProduct };
 }
 
-export const meta: MetaFunction<typeof loader> = ({ loaderData }) => [
-  { title: loaderData ? `${loaderData.entry.entryNumber} / TRACEBACK` : "TRACEBACK" },
+export const meta: MetaFunction<typeof loader> = ({ data }) => [
+  { title: data ? `${data.entry.entryNumber} / TRACEBACK` : "TRACEBACK" },
 ];
 
 export default function ArchiveDetailRoute() {
