@@ -20,4 +20,8 @@ npm run typecheck
 - `docs/wireframe.md`: page structure and frontend implementation reference
 - `public/records`: first drop reference images
 
+## Frontend TODO
+
+- Add CI/CD for typecheck, build, preview/deployment, and environment handling.
+
 Backend implementation and API documentation live in `../traceback`.
