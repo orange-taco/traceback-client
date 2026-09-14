@@ -1,0 +1,111 @@
+import type { AllauthResponse } from "~/features/auth/auth.types";
+
+const authBasePath = "/_allauth/browser/v1";
+
+export function getCurrentSession() {
+  return requestAuth("GET", "/auth/session");
+}
+
+export function loginWithEmail(email: string, password: string) {
+  return requestAuth("POST", "/auth/login", { email, password });
+}
+
+export function signupWithEmail(email: string, password: string) {
+  return requestAuth("POST", "/auth/signup", { email, password });
+}
+
+export function verifyEmail(key: string) {
+  return requestAuth("POST", "/auth/email/verify", { key });
+}
+
+export function resendEmailVerification(email: string) {
+  return requestAuth("POST", "/auth/email/verify/resend", { email });
+}
+
+export function requestPasswordReset(email: string) {
+  return requestAuth("POST", "/auth/password/request", { email });
+}
+
+export function resetPassword(key: string, password: string) {
+  return requestAuth("POST", "/auth/password/reset", { key, password });
+}
+
+export function changePassword(currentPassword: string, newPassword: string) {
+  const payload = { new_password: newPassword };
+  return requestAuth(
+    "POST",
+    "/account/password/change",
+    currentPassword ? { current_password: currentPassword, ...payload } : payload,
+  );
+}
+
+export function logout() {
+  return requestAuth("DELETE", "/auth/session");
+}
+
+export async function submitKakaoLogin(callbackUrl: string) {
+  const csrfToken = await ensureCsrfToken();
+  const form = document.createElement("form");
+  form.method = "post";
+  form.action = `${authBasePath}/auth/provider/redirect`;
+  appendInput(form, "provider", "kakao");
+  appendInput(form, "process", "login");
+  appendInput(form, "callback_url", callbackUrl);
+  appendInput(form, "csrfmiddlewaretoken", csrfToken);
+  document.body.append(form);
+  form.submit();
+}
+
+async function requestAuth(
+  method: "GET" | "POST" | "DELETE",
+  path: string,
+  payload?: Record<string, string>,
+) {
+  const headers: Record<string, string> = { Accept: "application/json" };
+  if (method !== "GET") {
+    headers["Content-Type"] = "application/json";
+    headers["X-CSRFToken"] = await ensureCsrfToken();
+  }
+  const response = await fetch(`${authBasePath}${path}`, {
+    method,
+    credentials: "same-origin",
+    headers,
+    body: payload ? JSON.stringify(payload) : undefined,
+  });
+  const data = (await response.json()) as Partial<AllauthResponse>;
+  return {
+    ...data,
+    status: data.status ?? response.status,
+    meta: data.meta ?? { is_authenticated: false },
+  } as AllauthResponse;
+}
+
+async function ensureCsrfToken() {
+  let token = readCookie("csrftoken");
+  if (token) return token;
+
+  await fetch(`${authBasePath}/config`, {
+    credentials: "same-origin",
+    headers: { Accept: "application/json" },
+  });
+  token = readCookie("csrftoken");
+  if (!token) throw new Error("CSRF token was not issued.");
+  return token;
+}
+
+function readCookie(name: string) {
+  const prefix = `${encodeURIComponent(name)}=`;
+  const value = document.cookie
+    .split(";")
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(prefix));
+  return value ? decodeURIComponent(value.slice(prefix.length)) : null;
+}
+
+function appendInput(form: HTMLFormElement, name: string, value: string) {
+  const input = document.createElement("input");
+  input.type = "hidden";
+  input.name = name;
+  input.value = value;
+  form.append(input);
+}

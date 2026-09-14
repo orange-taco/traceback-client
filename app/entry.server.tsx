@@ -1,4 +1,4 @@
-import type { AppLoadContext, EntryContext } from "react-router";
+import type { EntryContext } from "react-router";
 import { PassThrough } from "node:stream";
 import { ServerRouter } from "react-router";
 import { createReadableStreamFromReadable } from "@react-router/node";
@@ -12,7 +12,7 @@ export default function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
-  _loadContext: AppLoadContext,
+  _loadContext: unknown,
 ) {
   return new Promise((resolve, reject) => {
     let shellRendered = false;

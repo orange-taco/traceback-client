@@ -17,7 +17,7 @@ export default function IndexRoute() {
 
   return (
     <div>
-      <section className="grid min-h-[calc(100vh-8rem)] border-b border-ink/20 md:grid-cols-[1fr_420px]">
+      <section className="grid min-h-[calc(100vh-8rem)] border-b border-border-default md:grid-cols-[1fr_420px]">
         <div className="p-4 md:p-8">
           <p className="meta mb-4">
             {heroEntry.entryNumber} / PUBLIC RECORD / {heroEntry.route} /{" "}
@@ -30,7 +30,7 @@ export default function IndexRoute() {
             className="h-[62vh] min-h-[420px]"
           />
         </div>
-        <aside className="border-t border-ink/20 p-4 md:border-l md:border-t-0 md:p-8">
+        <aside className="border-t border-border-default p-4 md:border-l md:border-t-0 md:p-8">
           <div className="sticky top-28 grid gap-6">
             <div>
               <p className="meta mb-4">Observation Log</p>

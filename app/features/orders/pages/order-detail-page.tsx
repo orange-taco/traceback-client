@@ -1,24 +1,22 @@
-import type { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useLoaderData } from "react-router";
+import type { Route } from "./+types/order-detail-page";
 
 import { ButtonLink } from "~/components/button";
 import { PageHeading } from "~/components/page-heading";
 import { products } from "~/features/catalog/data/records";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params }: Route.LoaderArgs) {
   return {
     orderNumber: params.orderNumber ?? "TB-20260510-0001",
     product: products[0],
   };
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  { title: data ? `${data.orderNumber} / TRACEBACK` : "TRACEBACK" },
+export const meta: Route.MetaFunction = ({ loaderData }) => [
+  { title: loaderData ? `${loaderData.orderNumber} / TRACEBACK` : "TRACEBACK" },
 ];
 
-export default function OrderDetailRoute() {
-  const { orderNumber, product } = useLoaderData<typeof loader>();
-
+export default function OrderDetailRoute({ loaderData }: Route.ComponentProps) {
+  const { orderNumber, product } = loaderData;
   return (
     <div>
       <PageHeading
@@ -27,7 +25,7 @@ export default function OrderDetailRoute() {
         description="Static confirmation wireframe. Payment and fulfillment state will be backed by the server order model."
       />
       <section className="mx-auto max-w-3xl px-4 py-10 md:px-8">
-        <div className="divide-y divide-ink/20 border-y border-ink/20 font-mono text-xs uppercase tracking-meta">
+        <div className="divide-y divide-border-default border-y border-border-default font-mono text-xs uppercase tracking-meta">
           {[
             ["Status", "PAYMENT_CONFIRMED"],
             ["Total", product.priceLabel],
@@ -36,7 +34,7 @@ export default function OrderDetailRoute() {
             ["Items", `${product.name} / BLACK / M / 1`],
           ].map(([label, value]) => (
             <div key={label} className="grid gap-2 py-4 md:grid-cols-[180px_1fr]">
-              <span className="text-muted">{label}</span>
+              <span className="text-text-secondary">{label}</span>
               <span>{value}</span>
             </div>
           ))}
