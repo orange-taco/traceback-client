@@ -6,6 +6,7 @@ export default [
   route("/archive", "features/archive/pages/archive-index-page.tsx"),
   route("/archive/:entry", "features/archive/pages/archive-detail-page.tsx"),
   route("/auth/login", "features/auth/pages/login-page.tsx"),
+  route("/account", "features/auth/pages/account-page.tsx"),
   route(
     "/auth/kakao/callback",
     "features/auth/pages/kakao-callback-page.tsx",

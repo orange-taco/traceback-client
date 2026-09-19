@@ -8,7 +8,6 @@ import type { AllauthResponse, AuthIntent } from "~/features/auth/auth.types";
 import {
   getCurrentSession,
   loginWithEmail,
-  logout,
   resendEmailVerification,
   signupWithEmail,
   submitKakaoLogin,
@@ -19,24 +18,19 @@ export const meta: MetaFunction = () => [{ title: "Account / TRACEBACK" }];
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const [email, setEmail] = useState<string | null>(null);
   const returnTo = normalizeReturnTo(searchParams.get("returnTo"));
 
   useEffect(() => {
     getCurrentSession().then((response) => {
       if (response.meta.is_authenticated) {
-        setEmail(response.data?.user?.email ?? "Signed in");
+        window.location.replace(returnTo === "/" ? "/account" : returnTo);
       }
     });
-  }, []);
+  }, [returnTo]);
 
   return (
     <AuthLayout>
-      {email ? (
-        <SignedInPanel email={email} onSignedOut={() => setEmail(null)} />
-      ) : (
-        <AuthPanel returnTo={returnTo} />
-      )}
+      <AuthPanel returnTo={returnTo} />
     </AuthLayout>
   );
 }
@@ -192,22 +186,6 @@ function ModeSelector({ mode, onChange }: { mode: AuthIntent; onChange: (mode: A
           {item === "login" ? "Sign In" : "Create"}
         </button>
       ))}
-    </div>
-  );
-}
-
-function SignedInPanel({ email, onSignedOut }: { email: string; onSignedOut: () => void }) {
-  async function handleLogout() {
-    await logout();
-    onSignedOut();
-  }
-  return (
-    <div className="grid gap-4 border border-border-default p-5 text-center">
-      <p className="text-sm text-text-primary">{email}</p>
-      <Link to="/auth/password/change" className="text-xs text-action-primary hover:underline">
-        Change password
-      </Link>
-      <button type="button" onClick={handleLogout} className={primaryButtonClass}>Sign Out</button>
     </div>
   );
 }

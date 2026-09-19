@@ -58,7 +58,7 @@ export default function PasswordChangePage() {
   return (
     <section className="mx-auto max-w-sm px-4 py-10">
       <form onSubmit={handleSubmit} className="grid gap-4 border border-border-default p-5">
-        <p className="meta">Change Password</p>
+        <p className="meta">{hasUsablePassword ? "Change Password" : "Set Password"}</p>
         {hasUsablePassword ? (
           <label>
             <span className="meta mb-2 block">Current password</span>
@@ -75,7 +75,7 @@ export default function PasswordChangePage() {
         </label>
         {message ? <p className="text-sm text-text-secondary">{message}</p> : null}
         <button type="submit" disabled={isSubmitting || hasUsablePassword === null} className="focus-ring min-h-11 bg-action-primary px-5 text-xs uppercase text-white disabled:opacity-60">
-          {isSubmitting ? "Saving..." : "Set password"}
+          {isSubmitting ? "Saving..." : hasUsablePassword ? "Change password" : "Set password"}
         </button>
         <Link to="/auth/login" className="text-center text-xs text-action-primary hover:underline">Return to account</Link>
       </form>
