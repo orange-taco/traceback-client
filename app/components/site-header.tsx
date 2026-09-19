@@ -7,7 +7,7 @@ const navItems = [
   { to: "/archive", label: "Archive" },
   { to: "/about", label: "About" },
   { to: "/orders/lookup", label: "Tracking" },
-  { to: "/auth/login", label: "Account" },
+  { to: "/account", label: "Account" },
   { to: "/cart", label: "Cart" },
 ];
 
