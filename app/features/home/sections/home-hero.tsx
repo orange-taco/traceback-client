@@ -1,41 +1,26 @@
 import { ButtonLink } from "~/components/button";
 import { ImageFrame } from "~/components/image-frame";
-import { RecordMeta } from "~/components/record-meta";
 import type { ArchiveEntry } from "~/features/catalog/data/records";
 
 export function HomeHero({ entry }: { entry: ArchiveEntry }) {
   return (
-    <section className="grid min-h-[calc(100vh-8rem)] border-b border-border-default md:grid-cols-[1fr_420px]">
+    <section className="border-b border-border-default">
       <div className="p-4 md:p-8">
-        <p className="meta mb-4">
-          {entry.entryNumber} / PUBLIC RECORD / {entry.route} / {entry.time}
-        </p>
         <ImageFrame
           src={entry.image}
           alt={entry.title}
-          caption={entry.fileName}
-          className="h-[62vh] min-h-[420px]"
+          className="h-[62vh] min-h-[360px]"
         />
-      </div>
-      <aside className="border-t border-border-default p-4 md:border-l md:border-t-0 md:p-8">
-        <div className="sticky top-28 grid gap-6">
+        <div className="mt-5 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="meta mb-4">Observation Log</p>
-            <h1 className="font-mono text-4xl uppercase tracking-widebrand md:text-6xl">
-              TRACE
-              <br />
-              BACK
+            <p className="meta mb-2">{entry.entryNumber}</p>
+            <h1 className="max-w-2xl font-mono text-2xl uppercase tracking-widebrand md:text-4xl">
+              {entry.title}
             </h1>
           </div>
-          <RecordMeta entry={entry} />
-          <div className="flex flex-col gap-3">
-            <ButtonLink to="/store">View Drop 001</ButtonLink>
-            <ButtonLink to="/archive/ENTRY_001" tone="secondary">
-              View Archive Entry
-            </ButtonLink>
-          </div>
+          <ButtonLink to="/store">Shop the drop</ButtonLink>
         </div>
-      </aside>
+      </div>
     </section>
   );
 }
