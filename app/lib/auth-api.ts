@@ -1,9 +1,18 @@
-import type { AllauthResponse } from "~/features/auth/auth.types";
+import type { AllauthResponse, ConnectedProvider } from "~/features/auth/auth.types";
 
 const authBasePath = "/_allauth/browser/v1";
 
 export function getCurrentSession() {
   return requestAuth("GET", "/auth/session");
+}
+
+export async function getConnectedProviders() {
+  const response = await requestAuth("GET", "/account/providers");
+  return (response.data as unknown as ConnectedProvider[] | undefined) ?? [];
+}
+
+export function disconnectProvider(provider: string, account: string) {
+  return requestAuth("DELETE", "/account/providers", { provider, account });
 }
 
 export function loginWithEmail(email: string, password: string) {

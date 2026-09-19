@@ -24,3 +24,9 @@ export type AllauthResponse = {
   };
   errors?: AllauthError[];
 };
+
+export type ConnectedProvider = {
+  uid: string;
+  provider: { id: string; name: string };
+  display: string;
+};
