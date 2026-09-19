@@ -4,6 +4,7 @@ import type { MetaFunction } from "react-router";
 
 import {
   disconnectProvider,
+  deleteAccount,
   getConnectedProviders,
   getCurrentSession,
   logout,
@@ -18,6 +19,7 @@ export default function AccountPage() {
   const [hasUsablePassword, setHasUsablePassword] = useState<boolean | null>(null);
   const [providers, setProviders] = useState<ConnectedProvider[]>([]);
   const [providerMessage, setProviderMessage] = useState<string | null>(null);
+  const [deleteProviderPrompt, setDeleteProviderPrompt] = useState<ConnectedProvider | null>(null);
 
   useEffect(() => {
     getCurrentSession().then((response) => {
@@ -40,10 +42,24 @@ export default function AccountPage() {
     setProviderMessage(null);
     const response = await disconnectProvider(provider.provider.id, provider.uid);
     if (response.status >= 400) {
+      if (response.errors?.some((error) => error.code === "no_password")) {
+        setDeleteProviderPrompt(provider);
+        return;
+      }
       setProviderMessage(response.errors?.[0]?.message ?? "This account cannot be disconnected yet.");
       return;
     }
     setProviders((current) => current.filter((item) => item.uid !== provider.uid));
+  }
+
+  async function handleDeleteAfterDisconnect() {
+    const response = await deleteAccount();
+    if (response.status >= 400) {
+      setProviderMessage(response.errors?.[0]?.message ?? "We couldn't delete this account.");
+      return;
+    }
+    await logout();
+    navigate("/auth/login", { replace: true });
   }
 
   if (!email || hasUsablePassword === null) {
@@ -71,6 +87,21 @@ export default function AccountPage() {
               </div>
             ))}
             {providerMessage ? <p className="text-xs text-danger">{providerMessage}</p> : null}
+            {deleteProviderPrompt ? (
+              <div className="grid gap-3 border border-danger/30 bg-danger/10 p-3">
+                <p className="text-xs leading-5 text-danger">
+                  This is your only login method. Disconnecting {deleteProviderPrompt.provider.name} will permanently close this account.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  <button type="button" onClick={handleDeleteAfterDisconnect} className="focus-ring border border-danger px-3 py-2 text-xs uppercase text-danger">
+                    Disconnect and delete account
+                  </button>
+                  <button type="button" onClick={() => setDeleteProviderPrompt(null)} className="focus-ring border border-border-default px-3 py-2 text-xs uppercase text-text-primary">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         ) : null}
         <button type="button" onClick={handleLogout} className="focus-ring w-fit border border-border-default px-4 py-3 text-xs uppercase text-text-primary">

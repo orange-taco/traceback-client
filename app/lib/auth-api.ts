@@ -15,6 +15,10 @@ export function disconnectProvider(provider: string, account: string) {
   return requestAuth("DELETE", "/account/providers", { provider, account });
 }
 
+export function deleteAccount() {
+  return requestAuth("DELETE", "/account");
+}
+
 export function loginWithEmail(email: string, password: string) {
   return requestAuth("POST", "/auth/login", { email, password });
 }
