@@ -87,27 +87,30 @@ export default function AccountPage() {
               </div>
             ))}
             {providerMessage ? <p className="text-xs text-danger">{providerMessage}</p> : null}
-            {deleteProviderPrompt ? (
-              <div className="grid gap-3 border border-danger/30 bg-danger/10 p-3">
-                <p className="text-xs leading-5 text-danger">
-                  This is your only login method. Disconnecting {deleteProviderPrompt.provider.name} will permanently close this account.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                  <button type="button" onClick={handleDeleteAfterDisconnect} className="focus-ring border border-danger px-3 py-2 text-xs uppercase text-danger">
-                    Disconnect and delete account
-                  </button>
-                  <button type="button" onClick={() => setDeleteProviderPrompt(null)} className="focus-ring border border-border-default px-3 py-2 text-xs uppercase text-text-primary">
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            ) : null}
           </div>
         ) : null}
         <button type="button" onClick={handleLogout} className="focus-ring w-fit border border-border-default px-4 py-3 text-xs uppercase text-text-primary">
           Sign out
         </button>
       </div>
+      {deleteProviderPrompt ? (
+        <div className="fixed inset-0 z-40 grid place-items-center bg-black/40 px-4" role="presentation">
+          <div className="frame w-full max-w-md bg-surface p-5 shadow-xl" role="dialog" aria-modal="true" aria-labelledby="disconnect-title">
+            <p id="disconnect-title" className="meta mb-3 text-danger">Account access warning</p>
+            <p className="text-sm leading-6 text-text-primary">
+              This is your only login method. Disconnecting {deleteProviderPrompt.provider.name} will permanently close this account.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button type="button" onClick={handleDeleteAfterDisconnect} className="focus-ring border border-danger px-3 py-2 text-xs uppercase text-danger">
+                Disconnect and delete account
+              </button>
+              <button type="button" onClick={() => setDeleteProviderPrompt(null)} className="focus-ring border border-border-default px-3 py-2 text-xs uppercase text-text-primary">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
