@@ -10,6 +10,7 @@ export type AllauthUser = {
   id: number;
   email: string;
   username: string;
+  has_usable_password?: boolean;
 };
 
 export type AllauthResponse = {

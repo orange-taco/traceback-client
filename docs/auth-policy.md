@@ -17,6 +17,10 @@
   a replacement email when Kakao does not provide one.
 - Provider errors are mapped to short recovery-oriented UI messages; raw
   framework or provider text is not shown.
+- Password changes are based on whether the User has a usable password, not on
+  which provider was used. Email-only users and linked users with an existing
+  password must enter the current password. Social-only users, or linked users
+  who have never set a password, set their first password without one.
 
 ## Browser Session
 
