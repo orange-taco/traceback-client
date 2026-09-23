@@ -1,6 +1,7 @@
 import type { AllauthResponse, ConnectedProvider } from "~/features/auth/auth.types";
 
 const authBasePath = "/_allauth/browser/v1";
+const customAccountsBasePath = "/accounts";
 
 export function getCurrentSession() {
   return requestAuth("GET", "/auth/session");
@@ -16,7 +17,7 @@ export function disconnectProvider(provider: string, account: string) {
 }
 
 export function deleteAccount() {
-  return requestAuth("DELETE", "/account");
+  return requestCustomAccounts("DELETE", "/delete");
 }
 
 export function loginWithEmail(email: string, password: string) {
@@ -32,7 +33,7 @@ export function verifyEmail(key: string) {
 }
 
 export function resendEmailVerification(email: string) {
-  return requestAuth("POST", "/auth/email/verify/resend", { email });
+  return requestCustomAccounts("POST", "/email/verify/resend", { email });
 }
 
 export function requestPasswordReset(email: string) {
@@ -74,17 +75,40 @@ async function requestAuth(
   path: string,
   payload?: Record<string, string>,
 ) {
+  return requestBase(authBasePath, method, path, payload);
+}
+
+async function requestCustomAccounts(
+  method: "GET" | "POST" | "DELETE",
+  path: string,
+  payload?: Record<string, string>,
+) {
+  return requestBase(customAccountsBasePath, method, path, payload);
+}
+
+async function requestBase(
+  basePath: string,
+  method: "GET" | "POST" | "DELETE",
+  path: string,
+  payload?: Record<string, string>,
+) {
   const headers: Record<string, string> = { Accept: "application/json" };
   if (method !== "GET") {
     headers["Content-Type"] = "application/json";
     headers["X-CSRFToken"] = await ensureCsrfToken();
   }
-  const response = await fetch(`${authBasePath}${path}`, {
+  const response = await fetch(`${basePath}${path}`, {
     method,
     credentials: "same-origin",
     headers,
     body: payload ? JSON.stringify(payload) : undefined,
   });
+  if (response.status === 204) {
+    return {
+      status: 204,
+      meta: { is_authenticated: false },
+    } as AllauthResponse;
+  }
   const data = (await response.json()) as Partial<AllauthResponse>;
   return {
     ...data,

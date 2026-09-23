@@ -49,6 +49,10 @@ export default function AccountPage() {
       setProviderMessage(response.errors?.[0]?.message ?? "This account cannot be disconnected yet.");
       return;
     }
+    if (response.status === 204) {
+      navigate("/auth/login", { replace: true });
+      return;
+    }
     setProviders((current) => current.filter((item) => item.uid !== provider.uid));
   }
 
