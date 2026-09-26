@@ -23,11 +23,15 @@ export default function AccountPage() {
   const [deleteProviderPrompt, setDeleteProviderPrompt] = useState<ConnectedProvider | null>(null);
   const [disconnectingProvider, setDisconnectingProvider] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [accountDeleted, setAccountDeleted] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const disconnectButtonRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
+  const deletedHeadingRef = useRef<HTMLParagraphElement | null>(null);
   const disconnectingRef = useRef(false);
   const deletingRef = useRef(false);
+  const signingOutRef = useRef(false);
 
   useEffect(() => {
     getCurrentSession().then((response) => {
@@ -51,9 +55,29 @@ export default function AccountPage() {
     if (isDeleting) cancelButtonRef.current?.focus();
   }, [isDeleting]);
 
-  async function handleLogout() {
-    await logout();
-    navigate("/auth/login", { replace: true });
+  useEffect(() => {
+    if (accountDeleted) deletedHeadingRef.current?.focus();
+  }, [accountDeleted]);
+
+  async function signOut(afterDeletion: boolean) {
+    if (signingOutRef.current) return;
+    signingOutRef.current = true;
+    setIsSigningOut(true);
+    setProviderMessage(null);
+    try {
+      const response = await logout();
+      if (response.status >= 400 || response.meta.is_authenticated) {
+        throw new Error("Sign out failed");
+      }
+      navigate("/auth/login", { replace: true });
+    } catch {
+      setProviderMessage(afterDeletion
+        ? "Your account was deleted, but we couldn't sign you out. Please try signing out again."
+        : "We couldn't sign you out. Please try again.");
+    } finally {
+      signingOutRef.current = false;
+      setIsSigningOut(false);
+    }
   }
 
   async function handleDisconnect(provider: ConnectedProvider, event: MouseEvent<HTMLButtonElement>) {
@@ -96,14 +120,16 @@ export default function AccountPage() {
         setProviderMessage(response.errors?.[0]?.message ?? "We couldn't delete this account.");
         return;
       }
-      await logout();
-      navigate("/auth/login", { replace: true });
     } catch {
       setProviderMessage("We couldn't delete this account. Please try again.");
+      return;
     } finally {
       deletingRef.current = false;
       setIsDeleting(false);
     }
+    setAccountDeleted(true);
+    setDeleteProviderPrompt(null);
+    await signOut(true);
   }
 
   function handleDialogKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -124,6 +150,21 @@ export default function AccountPage() {
       event.preventDefault();
       first.focus();
     }
+  }
+
+  if (accountDeleted) {
+    return (
+      <section className="mx-auto max-w-sm px-4 py-10">
+        <div className="frame grid gap-4 p-5">
+          <p ref={deletedHeadingRef} tabIndex={-1} className="meta">Account deleted</p>
+          <p className="text-sm text-text-primary">Your account has been deleted.</p>
+          {providerMessage ? <p role="alert" className="text-sm text-danger">{providerMessage}</p> : null}
+          <button type="button" onClick={() => signOut(true)} disabled={isSigningOut} className="focus-ring w-fit border border-border-default px-4 py-3 text-xs uppercase text-text-primary disabled:opacity-60">
+            {isSigningOut ? "Signing out..." : "Try signing out again"}
+          </button>
+        </div>
+      </section>
+    );
   }
 
   if (!email || hasUsablePassword === null) {
@@ -150,10 +191,10 @@ export default function AccountPage() {
                 </button>
               </div>
             ))}
-            {providerMessage ? <p className="text-xs text-danger">{providerMessage}</p> : null}
           </div>
         ) : null}
-        <button type="button" onClick={handleLogout} className="focus-ring w-fit border border-border-default px-4 py-3 text-xs uppercase text-text-primary">
+        {providerMessage && !deleteProviderPrompt ? <p role="alert" className="text-sm text-danger">{providerMessage}</p> : null}
+        <button type="button" onClick={() => signOut(false)} disabled={isSigningOut} className="focus-ring w-fit border border-border-default px-4 py-3 text-xs uppercase text-text-primary disabled:opacity-60">
           Sign out
         </button>
       </div>
