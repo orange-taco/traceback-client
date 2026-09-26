@@ -1,13 +1,19 @@
 export function normalizeReturnTo(value: FormDataEntryValue | string | null) {
-  if (typeof value !== "string" || !value.startsWith("/")) {
+  if (typeof value !== "string" || !value.startsWith("/") || value.includes("\\")) {
     return "/";
   }
 
-  if (value.startsWith("//") || value.startsWith("/auth/")) {
+  try {
+    const origin = "https://return-to.invalid";
+    const url = new URL(value, origin);
+    if (url.origin !== origin || url.pathname.startsWith("/auth/")) {
+      return "/";
+    }
+
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
     return "/";
   }
-
-  return value;
 }
 
 export function getKakaoCallbackUrl(returnTo: string) {

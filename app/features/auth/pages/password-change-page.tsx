@@ -10,6 +10,7 @@ export const meta: MetaFunction = () => [{ title: "Change Password / TRACEBACK" 
 
 export default function PasswordChangePage() {
   const [message, setMessage] = useState<string | null>(null);
+  const [confirmationError, setConfirmationError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasUsablePassword, setHasUsablePassword] = useState<boolean | null>(null);
 
@@ -28,6 +29,7 @@ export default function PasswordChangePage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage(null);
+    setConfirmationError(null);
     const form = new FormData(event.currentTarget);
     const currentPassword = hasUsablePassword
       ? String(form.get("currentPassword") ?? "")
@@ -35,7 +37,7 @@ export default function PasswordChangePage() {
     const newPassword = String(form.get("newPassword") ?? "");
     const confirmation = String(form.get("passwordConfirm") ?? "");
     if (newPassword !== confirmation) {
-      setMessage(authMessages.passwordsDoNotMatch);
+      setConfirmationError(authMessages.passwordsDoNotMatch);
       return;
     }
 
@@ -71,7 +73,8 @@ export default function PasswordChangePage() {
         </label>
         <label>
           <span className="meta mb-2 block">Confirm new password</span>
-          <input name="passwordConfirm" type="password" autoComplete="new-password" minLength={authConstraints.passwordMinLength} maxLength={authConstraints.passwordMaxLength} required disabled={isSubmitting} className={inputClass} />
+          <input name="passwordConfirm" type="password" autoComplete="new-password" minLength={authConstraints.passwordMinLength} maxLength={authConstraints.passwordMaxLength} required disabled={isSubmitting} aria-invalid={Boolean(confirmationError)} aria-describedby={confirmationError ? "password-change-confirm-error" : undefined} className={inputClass} />
+          {confirmationError ? <span id="password-change-confirm-error" className="mt-2 block text-sm text-danger">{confirmationError}</span> : null}
         </label>
         {message ? <p className="text-sm text-text-secondary">{message}</p> : null}
         <button type="submit" disabled={isSubmitting || hasUsablePassword === null} className="focus-ring min-h-11 bg-action-primary px-5 text-xs uppercase text-white disabled:opacity-60">
