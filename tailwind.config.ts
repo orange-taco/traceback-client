@@ -6,12 +6,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        paper: "rgb(var(--color-paper) / <alpha-value>)",
-        ink: "rgb(var(--color-ink) / <alpha-value>)",
-        muted: "rgb(var(--color-muted) / <alpha-value>)",
-        line: "rgb(var(--color-line) / <alpha-value>)",
-        signal: "rgb(var(--color-signal) / <alpha-value>)",
-        archive: "rgb(var(--color-archive) / <alpha-value>)",
+        background: "rgb(var(--color-background) / <alpha-value>)",
+        surface: "rgb(var(--color-surface) / <alpha-value>)",
+        "surface-subtle": "rgb(var(--color-surface-subtle) / <alpha-value>)",
+        "text-primary": "rgb(var(--color-text-primary) / <alpha-value>)",
+        "text-secondary": "rgb(var(--color-text-secondary) / <alpha-value>)",
+        "border-default": "rgb(var(--color-border-default) / <alpha-value>)",
+        "action-primary": "rgb(var(--color-action-primary) / <alpha-value>)",
+        "action-primary-hover":
+          "rgb(var(--color-action-primary-hover) / <alpha-value>)",
+        "action-soft": "rgb(var(--color-action-soft) / <alpha-value>)",
+        danger: "rgb(var(--color-danger) / <alpha-value>)",
       },
       fontFamily: {
         sans: ["Suisse Intl", "Neue Haas Grotesk Text", "Helvetica Neue", "sans-serif"],
@@ -25,7 +30,7 @@ export default {
         site: "1440px",
       },
       boxShadow: {
-        frame: "0 0 0 1px rgb(var(--color-ink) / 0.08)",
+        frame: "0 0 0 1px rgb(var(--color-text-primary) / 0.08)",
       },
     },
   },
