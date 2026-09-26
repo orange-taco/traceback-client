@@ -21,6 +21,13 @@
   which provider was used. Email-only users and linked users with an existing
   password must enter the current password. Social-only users, or linked users
   who have never set a password, set their first password without one.
+- After the first password is set, subsequent changes require the current
+  password. The client uses allauth's `enter_current_password` error for an
+  incorrect current password.
+- Any signed-in user can request account deletion from the account page. The
+  client confirms before calling `/accounts/delete`; a provider unlink failure
+  leaves the account active and shows a retry message without exposing raw
+  provider errors.
 
 ## Browser Session
 

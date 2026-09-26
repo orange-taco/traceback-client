@@ -27,8 +27,9 @@ export default function PasswordChangePage() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const formElement = event.currentTarget;
     setMessage(null);
-    const form = new FormData(event.currentTarget);
+    const form = new FormData(formElement);
     const currentPassword = hasUsablePassword
       ? String(form.get("currentPassword") ?? "")
       : "";
@@ -47,7 +48,10 @@ export default function PasswordChangePage() {
           ? "Your password has been changed."
           : getErrorMessage(response.errors?.[0]?.code),
       );
-      if (response.status === 200) event.currentTarget.reset();
+      if (response.status === 200) {
+        formElement.reset();
+        setHasUsablePassword(true);
+      }
     } catch {
       setMessage(authMessages.authenticationFailed);
     } finally {
@@ -77,14 +81,14 @@ export default function PasswordChangePage() {
         <button type="submit" disabled={isSubmitting || hasUsablePassword === null} className="focus-ring min-h-11 bg-action-primary px-5 text-xs uppercase text-white disabled:opacity-60">
           {isSubmitting ? "Saving..." : hasUsablePassword ? "Change password" : "Set password"}
         </button>
-        <Link to="/auth/login" className="text-center text-xs text-action-primary hover:underline">Return to account</Link>
+        <Link to="/account" className="text-center text-xs text-action-primary hover:underline">Return to account</Link>
       </form>
     </section>
   );
 }
 
 function getErrorMessage(code?: string) {
-  if (code === "incorrect_password") return "The current password is incorrect.";
+  if (code === "enter_current_password") return "The current password is incorrect.";
   if (code === "password_too_short") return authMessages.passwordTooShort;
   return "We couldn't change your password. Please check the fields and try again.";
 }
