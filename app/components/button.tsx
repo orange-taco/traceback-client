@@ -6,8 +6,10 @@ import { cn } from "~/lib/classnames";
 type ButtonTone = "primary" | "secondary";
 
 const toneClass: Record<ButtonTone, string> = {
-  primary: "border-ink bg-ink text-paper hover:bg-signal hover:border-signal",
-  secondary: "border-ink/30 bg-transparent text-ink hover:border-ink",
+  primary:
+    "border-action-primary bg-action-primary text-white hover:border-action-primary-hover hover:bg-action-primary-hover",
+  secondary:
+    "border-border-default bg-surface text-text-primary hover:border-action-primary hover:bg-surface-subtle hover:text-action-primary",
 };
 
 export function Button({

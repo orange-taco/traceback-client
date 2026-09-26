@@ -460,12 +460,14 @@ app/routes/orders.$orderNumber.tsx
 
 ```ts
 const colors = {
-  paper: "#f3f0e8",
-  ink: "#111111",
-  muted: "#77736b",
-  line: "#c9c2b6",
-  signal: "#b3261e",
-  archive: "#1f3f5b",
+  background: "#ffffff",
+  surface: "#ffffff",
+  "surface-subtle": "#f1f5f9",
+  "text-primary": "#080b10",
+  "text-secondary": "#475569",
+  "border-default": "#cbd5e1",
+  "action-primary": "#155eef",
+  danger: "#b3261e",
 };
 ```
 
@@ -473,16 +475,16 @@ const colors = {
 
 - `max-w-[1440px] mx-auto`
 - 모바일 기본, `md:`부터 2컬럼 전환
-- 선 기반 구획: `border-t border-ink/20`
+- 선 기반 구획: `border-t border-border-default`
 - 메타 텍스트: `font-mono text-[11px] uppercase tracking-[0.18em]`
 - 본문: `text-sm md:text-base leading-relaxed`
-- 버튼: 검정 배경/흰 글자 1차, 외곽선 2차
+- 버튼: `bg-action-primary text-white` 1차, 외곽선 2차
 
 ### 이미지 컴포넌트 기준
 
 ```text
 ImageFrame
-  wrapper: border border-ink bg-paper
+  wrapper: border border-border-default bg-surface
   image: object-cover grayscale optional
   caption: file name / timestamp / entry number
 ```

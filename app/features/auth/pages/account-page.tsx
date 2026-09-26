@@ -1,0 +1,222 @@
+import { useEffect, useRef, useState } from "react";
+import type { KeyboardEvent, MouseEvent } from "react";
+import { Link, useNavigate } from "react-router";
+import type { MetaFunction } from "react-router";
+
+import {
+  disconnectProvider,
+  deleteAccount,
+  getConnectedProviders,
+  getCurrentSession,
+  logout,
+} from "~/lib/auth-api";
+import type { ConnectedProvider } from "~/features/auth/auth.types";
+
+export const meta: MetaFunction = () => [{ title: "My Account / TRACEBACK" }];
+
+export default function AccountPage() {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState<string | null>(null);
+  const [hasUsablePassword, setHasUsablePassword] = useState<boolean | null>(null);
+  const [providers, setProviders] = useState<ConnectedProvider[]>([]);
+  const [providerMessage, setProviderMessage] = useState<string | null>(null);
+  const [deleteProviderPrompt, setDeleteProviderPrompt] = useState<ConnectedProvider | null>(null);
+  const [disconnectingProvider, setDisconnectingProvider] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [accountDeleted, setAccountDeleted] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
+  const disconnectButtonRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const cancelButtonRef = useRef<HTMLButtonElement | null>(null);
+  const deletedHeadingRef = useRef<HTMLParagraphElement | null>(null);
+  const disconnectingRef = useRef(false);
+  const deletingRef = useRef(false);
+  const signingOutRef = useRef(false);
+
+  useEffect(() => {
+    getCurrentSession().then((response) => {
+      if (!response.meta.is_authenticated) {
+        navigate("/auth/login", { replace: true });
+        return;
+      }
+      setEmail(response.data?.user?.email ?? "Signed in");
+      setHasUsablePassword(response.data?.user?.has_usable_password ?? false);
+      getConnectedProviders().then(setProviders).catch(() => setProviderMessage("We couldn't load connected accounts."));
+    });
+  }, [navigate]);
+
+  useEffect(() => {
+    if (!deleteProviderPrompt) return;
+    cancelButtonRef.current?.focus();
+    return () => disconnectButtonRef.current?.focus();
+  }, [deleteProviderPrompt]);
+
+  useEffect(() => {
+    if (isDeleting) cancelButtonRef.current?.focus();
+  }, [isDeleting]);
+
+  useEffect(() => {
+    if (accountDeleted) deletedHeadingRef.current?.focus();
+  }, [accountDeleted]);
+
+  async function signOut(afterDeletion: boolean) {
+    if (signingOutRef.current) return;
+    signingOutRef.current = true;
+    setIsSigningOut(true);
+    setProviderMessage(null);
+    try {
+      const response = await logout();
+      if (response.status >= 400 || response.meta.is_authenticated) {
+        throw new Error("Sign out failed");
+      }
+      navigate("/auth/login", { replace: true });
+    } catch {
+      setProviderMessage(afterDeletion
+        ? "Your account was deleted, but we couldn't sign you out. Please try signing out again."
+        : "We couldn't sign you out. Please try again.");
+    } finally {
+      signingOutRef.current = false;
+      setIsSigningOut(false);
+    }
+  }
+
+  async function handleDisconnect(provider: ConnectedProvider, event: MouseEvent<HTMLButtonElement>) {
+    if (disconnectingRef.current) return;
+    disconnectingRef.current = true;
+    disconnectButtonRef.current = event.currentTarget;
+    setDisconnectingProvider(provider.uid);
+    setProviderMessage(null);
+    try {
+      const response = await disconnectProvider(provider.provider.id, provider.uid);
+      if (response.status >= 400) {
+        if (response.errors?.some((error) => error.code === "no_password")) {
+          setDeleteProviderPrompt(provider);
+          return;
+        }
+        setProviderMessage(response.errors?.[0]?.message ?? "This account cannot be disconnected yet.");
+        return;
+      }
+      if (response.status === 204) {
+        navigate("/auth/login", { replace: true });
+        return;
+      }
+      setProviders((current) => current.filter((item) => item.uid !== provider.uid));
+    } catch {
+      setProviderMessage("This account cannot be disconnected yet. Please try again.");
+    } finally {
+      disconnectingRef.current = false;
+      setDisconnectingProvider(null);
+    }
+  }
+
+  async function handleDeleteAfterDisconnect() {
+    if (deletingRef.current) return;
+    deletingRef.current = true;
+    setIsDeleting(true);
+    setProviderMessage(null);
+    try {
+      const response = await deleteAccount();
+      if (response.status >= 400) {
+        setProviderMessage(response.errors?.[0]?.message ?? "We couldn't delete this account.");
+        return;
+      }
+    } catch {
+      setProviderMessage("We couldn't delete this account. Please try again.");
+      return;
+    } finally {
+      deletingRef.current = false;
+      setIsDeleting(false);
+    }
+    setAccountDeleted(true);
+    setDeleteProviderPrompt(null);
+    await signOut(true);
+  }
+
+  function handleDialogKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.key === "Escape" && !deletingRef.current) {
+      event.preventDefault();
+      setDeleteProviderPrompt(null);
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const buttons = Array.from(dialogRef.current?.querySelectorAll<HTMLButtonElement>("button:not(:disabled)") ?? []);
+    if (!buttons.length) return;
+    const first = buttons[0];
+    const last = buttons[buttons.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  if (accountDeleted) {
+    return (
+      <section className="mx-auto max-w-sm px-4 py-10">
+        <div className="frame grid gap-4 p-5">
+          <p ref={deletedHeadingRef} tabIndex={-1} className="meta">Account deleted</p>
+          <p className="text-sm text-text-primary">Your account has been deleted.</p>
+          {providerMessage ? <p role="alert" className="text-sm text-danger">{providerMessage}</p> : null}
+          <button type="button" onClick={() => signOut(true)} disabled={isSigningOut} className="focus-ring w-fit border border-border-default px-4 py-3 text-xs uppercase text-text-primary disabled:opacity-60">
+            {isSigningOut ? "Signing out..." : "Try signing out again"}
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  if (!email || hasUsablePassword === null) {
+    return <section className="mx-auto max-w-2xl px-4 py-10"><p className="text-sm text-text-secondary">Loading account...</p></section>;
+  }
+
+  return (
+    <section className="mx-auto max-w-2xl px-4 py-10 md:px-8">
+      <div className="frame grid gap-5 p-4 md:p-6">
+        <p className="meta">My Account</p>
+        <div className="h-px bg-border-default" />
+        <p className="text-sm text-text-primary">{email}</p>
+        <Link to="/auth/password/change" className="text-sm text-action-primary hover:underline">
+          {hasUsablePassword ? "Change password" : "Set password"}
+        </Link>
+        {providers.length > 0 ? (
+          <div className="grid gap-3 border-t border-border-default pt-4">
+            <p className="meta">Connected accounts</p>
+            {providers.map((provider) => (
+              <div key={`${provider.provider.id}:${provider.uid}`} className="flex items-center justify-between gap-4 text-sm">
+                <span>{provider.provider.name}</span>
+                <button type="button" onClick={(event) => handleDisconnect(provider, event)} disabled={disconnectingProvider !== null} className="focus-ring border border-border-default px-3 py-2 text-xs uppercase text-text-primary disabled:opacity-60">
+                  {disconnectingProvider === provider.uid ? "Disconnecting..." : "Disconnect"}
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : null}
+        {providerMessage && !deleteProviderPrompt ? <p role="alert" className="text-sm text-danger">{providerMessage}</p> : null}
+        <button type="button" onClick={() => signOut(false)} disabled={isSigningOut} className="focus-ring w-fit border border-border-default px-4 py-3 text-xs uppercase text-text-primary disabled:opacity-60">
+          Sign out
+        </button>
+      </div>
+      {deleteProviderPrompt ? (
+        <div className="fixed inset-0 z-40 grid place-items-center bg-black/40 px-4" role="presentation">
+          <div ref={dialogRef} onKeyDown={handleDialogKeyDown} className="frame w-full max-w-md bg-surface p-5 shadow-xl" role="dialog" aria-modal="true" aria-labelledby="disconnect-title">
+            <p id="disconnect-title" className="meta mb-3 text-danger">Account access warning</p>
+            <p className="text-sm leading-6 text-text-primary">
+              This is your only login method. Disconnecting {deleteProviderPrompt.provider.name} will permanently close this account.
+            </p>
+            {providerMessage ? <p role="alert" className="mt-3 text-sm text-danger">{providerMessage}</p> : null}
+            <div className="mt-5 flex flex-wrap gap-3">
+              <button type="button" onClick={handleDeleteAfterDisconnect} disabled={isDeleting} className="focus-ring border border-danger px-3 py-2 text-xs uppercase text-danger disabled:opacity-60">
+                {isDeleting ? "Deleting..." : "Disconnect and delete account"}
+              </button>
+              <button ref={cancelButtonRef} type="button" onClick={() => { if (!deletingRef.current) setDeleteProviderPrompt(null); }} className="focus-ring border border-border-default px-3 py-2 text-xs uppercase text-text-primary">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </section>
+  );
+}
