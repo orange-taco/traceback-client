@@ -9,6 +9,9 @@ export function getCurrentSession() {
 
 export async function getConnectedProviders() {
   const response = await requestAuth("GET", "/account/providers");
+  if (response.status >= 400 || response.errors?.length) {
+    throw new Error("Could not load connected providers");
+  }
   return (response.data as unknown as ConnectedProvider[] | undefined) ?? [];
 }
 
@@ -109,7 +112,13 @@ async function requestBase(
       meta: { is_authenticated: false },
     } as AllauthResponse;
   }
-  const data = (await response.json()) as Partial<AllauthResponse>;
+  let data: Partial<AllauthResponse>;
+  try {
+    data = (await response.json()) as Partial<AllauthResponse>;
+  } catch {
+    if (response.ok) throw new Error("Invalid authentication response");
+    data = {};
+  }
   return {
     ...data,
     status: data.status ?? response.status,

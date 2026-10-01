@@ -17,6 +17,7 @@ export const meta: MetaFunction = () => [{ title: "My Account / TRACEBACK" }];
 export default function AccountPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string | null>(null);
+  const [sessionError, setSessionError] = useState<string | null>(null);
   const [hasUsablePassword, setHasUsablePassword] = useState<boolean | null>(null);
   const [providers, setProviders] = useState<ConnectedProvider[]>([]);
   const [providerMessage, setProviderMessage] = useState<string | null>(null);
@@ -35,14 +36,17 @@ export default function AccountPage() {
 
   useEffect(() => {
     getCurrentSession().then((response) => {
+      if (response.status >= 400) {
+        throw new Error("Session request failed");
+      }
       if (!response.meta.is_authenticated) {
         navigate("/auth/login", { replace: true });
         return;
       }
       setEmail(response.data?.user?.email ?? "Signed in");
       setHasUsablePassword(response.data?.user?.has_usable_password ?? false);
-      getConnectedProviders().then(setProviders).catch(() => setProviderMessage("We couldn't load connected accounts."));
-    });
+      getConnectedProviders().then(setProviders).catch(() => setProviderMessage("연결된 계정을 불러오지 못했습니다."));
+    }).catch(() => setSessionError("계정 정보를 불러오지 못했습니다. 새로고침 후 다시 시도해 주세요."));
   }, [navigate]);
 
   useEffect(() => {
@@ -165,6 +169,10 @@ export default function AccountPage() {
         </div>
       </section>
     );
+  }
+
+  if (sessionError) {
+    return <section className="mx-auto max-w-2xl px-4 py-10"><p role="alert" className="text-sm text-danger">{sessionError}</p></section>;
   }
 
   if (!email || hasUsablePassword === null) {

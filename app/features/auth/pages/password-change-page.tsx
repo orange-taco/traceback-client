@@ -30,7 +30,8 @@ export default function PasswordChangePage() {
     event.preventDefault();
     setMessage(null);
     setConfirmationError(null);
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const currentPassword = hasUsablePassword
       ? String(form.get("currentPassword") ?? "")
       : "";
@@ -49,7 +50,7 @@ export default function PasswordChangePage() {
           ? "Your password has been changed."
           : getErrorMessage(response.errors?.[0]?.code),
       );
-      if (response.status === 200) event.currentTarget.reset();
+      if (response.status === 200) formElement.reset();
     } catch {
       setMessage(authMessages.authenticationFailed);
     } finally {

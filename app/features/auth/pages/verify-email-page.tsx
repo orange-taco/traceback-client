@@ -19,7 +19,7 @@ export default function VerifyEmailPage() {
     setStatus("pending");
     try {
       const response = await verifyEmail(key);
-      setStatus(response.errors ? "error" : "verified");
+      setStatus(response.status >= 400 || response.errors?.length ? "error" : "verified");
     } catch {
       setStatus("error");
     }
