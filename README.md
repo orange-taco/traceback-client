@@ -11,8 +11,13 @@ npm run typecheck
 ```
 
 Local auth uses same-origin browser requests. Vite proxies `/_allauth` and
-`/accounts` to Django at `http://localhost:8000`; production must route those
-paths to Django through the site reverse proxy.
+`/accounts` to Django at `http://localhost:8000`.
+
+Vercel serves the React Router app. When the Django backend is available,
+`vercel.ts` routes authentication and API requests to the matching HTTPS origin
+from `DJANGO_ORIGIN`. Set it in the Vercel project; `.env.example` documents the
+format. See [`docs/vercel-deployment.md`](docs/vercel-deployment.md) for setup
+and verification.
 
 ## Structure
 
