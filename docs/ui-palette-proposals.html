@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TRACEBACK UI Palette Proposals</title>
+    <style>
+      :root {
+        color: #07101d;
+        font-family:
+          "Suisse Intl", "Neue Haas Grotesk Text", "Helvetica Neue", Arial,
+          sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #ffffff;
+      }
+
+      .board {
+        display: grid;
+        gap: 24px;
+        padding: 24px;
+      }
+
+      .proposal {
+        --surface: #ffffff;
+        --panel: #ffffff;
+        --header: #ffffff;
+        --text: #080b10;
+        --subtle: #3b414a;
+        --border: #b7bdc6;
+        --active: #f9fafb;
+        min-height: 620px;
+        overflow: hidden;
+        border: 1px solid color-mix(in srgb, var(--border), #000 12%);
+        background: var(--surface);
+        color: var(--text);
+      }
+
+      .proposal[data-theme="arctic"] {
+        --surface: #ffffff;
+        --panel: #ffffff;
+        --header: #ffffff;
+        --subtle: #3a4048;
+        --border: #b8bec7;
+        --active: #f9fafb;
+      }
+
+      .proposal[data-theme="blueprint"] {
+        --surface: #ffffff;
+        --panel: #ffffff;
+        --header: #ffffff;
+        --subtle: #343b45;
+        --border: #aeb5bf;
+        --active: #f9fafb;
+      }
+
+      .proposal[data-theme="cyan"] {
+        --surface: #ffffff;
+        --panel: #ffffff;
+        --header: #ffffff;
+        --subtle: #383d43;
+        --border: #9fa7b1;
+        --active: #f9fafb;
+      }
+
+      .proposal[data-theme="lavender"] {
+        --surface: #ffffff;
+        --panel: #ffffff;
+        --header: #ffffff;
+        --subtle: #3b414a;
+        --border: #b8bec7;
+        --active: #f9fafb;
+      }
+
+      .proposal[data-theme="graphite"] {
+        --surface: #ffffff;
+        --panel: #ffffff;
+        --header: #ffffff;
+        --subtle: #343a40;
+        --border: #aeb5bf;
+        --active: #f9fafb;
+      }
+
+      .proposal[data-theme="ink"] {
+        --surface: #ffffff;
+        --panel: #ffffff;
+        --header: #ffffff;
+        --text: #080d14;
+        --subtle: #3d444d;
+        --border: #a5adb8;
+        --active: #f9fafb;
+      }
+
+      .proposal-name {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in srgb, var(--panel), var(--surface) 24%);
+        padding: 12px 18px;
+        font-family: "IBM Plex Mono", "Berkeley Mono", ui-monospace, monospace;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .viewport {
+        min-height: 560px;
+        background: var(--surface);
+      }
+
+      .topbar {
+        display: flex;
+        min-height: 64px;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in srgb, var(--header), transparent 3%);
+        padding: 0 32px;
+        color: var(--text);
+        font-family: "IBM Plex Mono", "Berkeley Mono", ui-monospace, monospace;
+      }
+
+      .brand {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 0.32em;
+      }
+
+      .nav {
+        display: flex;
+        gap: 22px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .nav span {
+        color: color-mix(in srgb, currentColor, transparent 24%);
+      }
+
+      .nav .active {
+        color: currentColor;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: minmax(280px, 360px) 1fr;
+        gap: 72px;
+        padding: 76px 56px;
+      }
+
+      .auth {
+        width: 300px;
+        justify-self: end;
+      }
+
+      .meta,
+      .label {
+        font-family: "IBM Plex Mono", "Berkeley Mono", ui-monospace, monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .meta {
+        color: var(--subtle);
+        text-align: center;
+      }
+
+      .title {
+        margin: 16px 0 34px;
+        text-align: center;
+        font-family: "IBM Plex Mono", "Berkeley Mono", ui-monospace, monospace;
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: 0.32em;
+      }
+
+      .kakao {
+        display: block;
+        width: 300px;
+        height: 45px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        border: 0;
+        border-radius: 12px;
+        padding: 0;
+        background: #ffffff;
+      }
+
+      .kakao img {
+        display: block;
+        width: 300px;
+        height: 45px;
+      }
+
+      .tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-bottom: 16px;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        font-family: "IBM Plex Mono", "Berkeley Mono", ui-monospace, monospace;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .tab {
+        display: flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .tab.active {
+        background: var(--active);
+        color: var(--text);
+      }
+
+      .field {
+        margin-bottom: 16px;
+      }
+
+      .label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--subtle);
+      }
+
+      .input,
+      .submit {
+        display: flex;
+        width: 300px;
+        min-height: 43px;
+        align-items: center;
+        border: 1px solid var(--border);
+        background: var(--panel);
+        padding: 0 16px;
+        font-family: "IBM Plex Mono", "Berkeley Mono", ui-monospace, monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+      }
+
+      .input {
+        color: color-mix(in srgb, var(--subtle), transparent 30%);
+      }
+
+      .submit {
+        justify-content: center;
+        border-color: var(--text);
+        background: var(--panel);
+        color: var(--text);
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .store {
+        align-self: start;
+        border-top: 1px solid var(--border);
+      }
+
+      .store-head,
+      .record {
+        display: grid;
+        grid-template-columns: 96px 160px minmax(220px, 1fr) 128px;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .store-head {
+        border-bottom: 1px solid var(--border);
+        padding: 14px 0;
+        color: var(--subtle);
+      }
+
+      .record {
+        border-bottom: 1px solid var(--border);
+        padding: 20px 0;
+      }
+
+      .thumb {
+        display: grid;
+        width: 160px;
+        height: 120px;
+        place-items: center;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: var(--panel);
+      }
+
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transform: scale(1.03);
+      }
+
+      .product {
+        margin: 0 0 10px;
+        font-family: "IBM Plex Mono", "Berkeley Mono", ui-monospace, monospace;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .description {
+        margin: 22px 0 0;
+        color: var(--text);
+        font-size: 14px;
+      }
+
+      .price {
+        text-align: right;
+      }
+
+      @media (max-width: 980px) {
+        .content {
+          grid-template-columns: 1fr;
+          gap: 48px;
+        }
+
+        .auth {
+          justify-self: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="board">
+      <section class="proposal" data-theme="arctic">
+        <div class="proposal-name">
+          <span>01 Optic White</span>
+          <span>#FFFFFF</span>
+        </div>
+        <div class="viewport">
+          <header class="topbar">
+            <div class="brand">TRACEBACK</div>
+            <nav class="nav">
+              <span>Store</span><span>Archive</span><span>About</span
+              ><span>Tracking</span><span class="active">Account</span><span>Cart</span>
+            </nav>
+          </header>
+          <div class="content">
+            <div class="auth">
+              <div class="meta">Account</div>
+              <div class="title">TRACEBACK</div>
+              <div class="kakao">
+                <img src="../public/auth/kakao-login-full-large-wide-en.png" alt="" />
+              </div>
+              <div class="tabs"><div class="tab active">Sign In</div><div class="tab">Create</div></div>
+              <div class="field"><span class="label">Email</span><div class="input">name@example.com</div></div>
+              <div class="field"><span class="label">Password</span><div class="input">Password</div></div>
+              <div class="submit">Sign In</div>
+            </div>
+            <div class="store">
+              <div class="store-head"><span class="label">Entry</span><span></span><span class="label">Product</span><span class="label price">Status</span></div>
+              <div class="record">
+                <span class="label">ENTRY_002</span>
+                <div class="thumb"><img src="../public/records/entry-002.jpeg" alt="" /></div>
+                <div><p class="product">MISSEEN_002 T-SHIRT</p><span class="label">WHITE / SS / MALE</span><p class="description">LOW RES OUTPUT / INTERIOR</p></div>
+                <div class="label price">COMING SOON<br /><br />TBD</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="proposal" data-theme="blueprint">
+        <div class="proposal-name"><span>02 Gallery White</span><span>#FFFFFF</span></div>
+        <div class="viewport">
+          <header class="topbar"><div class="brand">TRACEBACK</div><nav class="nav"><span>Store</span><span>Archive</span><span>About</span><span>Tracking</span><span class="active">Account</span><span>Cart</span></nav></header>
+          <div class="content">
+            <div class="auth"><div class="meta">Account</div><div class="title">TRACEBACK</div><div class="kakao"><img src="../public/auth/kakao-login-full-large-wide-en.png" alt="" /></div><div class="tabs"><div class="tab active">Sign In</div><div class="tab">Create</div></div><div class="field"><span class="label">Email</span><div class="input">name@example.com</div></div><div class="field"><span class="label">Password</span><div class="input">Password</div></div><div class="submit">Sign In</div></div>
+            <div class="store"><div class="store-head"><span class="label">Entry</span><span></span><span class="label">Product</span><span class="label price">Status</span></div><div class="record"><span class="label">ENTRY_002</span><div class="thumb"><img src="../public/records/entry-002.jpeg" alt="" /></div><div><p class="product">MISSEEN_002 T-SHIRT</p><span class="label">WHITE / SS / MALE</span><p class="description">LOW RES OUTPUT / INTERIOR</p></div><div class="label price">COMING SOON<br /><br />TBD</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="proposal" data-theme="cyan">
+        <div class="proposal-name"><span>03 Silver White</span><span>#FFFFFF</span></div>
+        <div class="viewport">
+          <header class="topbar"><div class="brand">TRACEBACK</div><nav class="nav"><span>Store</span><span>Archive</span><span>About</span><span>Tracking</span><span class="active">Account</span><span>Cart</span></nav></header>
+          <div class="content">
+            <div class="auth"><div class="meta">Account</div><div class="title">TRACEBACK</div><div class="kakao"><img src="../public/auth/kakao-login-full-large-wide-en.png" alt="" /></div><div class="tabs"><div class="tab active">Sign In</div><div class="tab">Create</div></div><div class="field"><span class="label">Email</span><div class="input">name@example.com</div></div><div class="field"><span class="label">Password</span><div class="input">Password</div></div><div class="submit">Sign In</div></div>
+            <div class="store"><div class="store-head"><span class="label">Entry</span><span></span><span class="label">Product</span><span class="label price">Status</span></div><div class="record"><span class="label">ENTRY_002</span><div class="thumb"><img src="../public/records/entry-002.jpeg" alt="" /></div><div><p class="product">MISSEEN_002 T-SHIRT</p><span class="label">WHITE / SS / MALE</span><p class="description">LOW RES OUTPUT / INTERIOR</p></div><div class="label price">COMING SOON<br /><br />TBD</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="proposal" data-theme="lavender">
+        <div class="proposal-name"><span>04 Pure White</span><span>#FFFFFF</span></div>
+        <div class="viewport">
+          <header class="topbar"><div class="brand">TRACEBACK</div><nav class="nav"><span>Store</span><span>Archive</span><span>About</span><span>Tracking</span><span class="active">Account</span><span>Cart</span></nav></header>
+          <div class="content">
+            <div class="auth"><div class="meta">Account</div><div class="title">TRACEBACK</div><div class="kakao"><img src="../public/auth/kakao-login-full-large-wide-en.png" alt="" /></div><div class="tabs"><div class="tab active">Sign In</div><div class="tab">Create</div></div><div class="field"><span class="label">Email</span><div class="input">name@example.com</div></div><div class="field"><span class="label">Password</span><div class="input">Password</div></div><div class="submit">Sign In</div></div>
+            <div class="store"><div class="store-head"><span class="label">Entry</span><span></span><span class="label">Product</span><span class="label price">Status</span></div><div class="record"><span class="label">ENTRY_002</span><div class="thumb"><img src="../public/records/entry-002.jpeg" alt="" /></div><div><p class="product">MISSEEN_002 T-SHIRT</p><span class="label">WHITE / SS / MALE</span><p class="description">LOW RES OUTPUT / INTERIOR</p></div><div class="label price">COMING SOON<br /><br />TBD</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="proposal" data-theme="graphite">
+        <div class="proposal-name"><span>05 Neutral White</span><span>#FFFFFF</span></div>
+        <div class="viewport">
+          <header class="topbar"><div class="brand">TRACEBACK</div><nav class="nav"><span>Store</span><span>Archive</span><span>About</span><span>Tracking</span><span class="active">Account</span><span>Cart</span></nav></header>
+          <div class="content">
+            <div class="auth"><div class="meta">Account</div><div class="title">TRACEBACK</div><div class="kakao"><img src="../public/auth/kakao-login-full-large-wide-en.png" alt="" /></div><div class="tabs"><div class="tab active">Sign In</div><div class="tab">Create</div></div><div class="field"><span class="label">Email</span><div class="input">name@example.com</div></div><div class="field"><span class="label">Password</span><div class="input">Password</div></div><div class="submit">Sign In</div></div>
+            <div class="store"><div class="store-head"><span class="label">Entry</span><span></span><span class="label">Product</span><span class="label price">Status</span></div><div class="record"><span class="label">ENTRY_002</span><div class="thumb"><img src="../public/records/entry-002.jpeg" alt="" /></div><div><p class="product">MISSEEN_002 T-SHIRT</p><span class="label">WHITE / SS / MALE</span><p class="description">LOW RES OUTPUT / INTERIOR</p></div><div class="label price">COMING SOON<br /><br />TBD</div></div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="proposal" data-theme="ink">
+        <div class="proposal-name"><span>06 White Header</span><span>#FFFFFF</span></div>
+        <div class="viewport">
+          <header class="topbar"><div class="brand">TRACEBACK</div><nav class="nav"><span>Store</span><span>Archive</span><span>About</span><span>Tracking</span><span class="active">Account</span><span>Cart</span></nav></header>
+          <div class="content">
+            <div class="auth"><div class="meta">Account</div><div class="title">TRACEBACK</div><div class="kakao"><img src="../public/auth/kakao-login-full-large-wide-en.png" alt="" /></div><div class="tabs"><div class="tab active">Sign In</div><div class="tab">Create</div></div><div class="field"><span class="label">Email</span><div class="input">name@example.com</div></div><div class="field"><span class="label">Password</span><div class="input">Password</div></div><div class="submit">Sign In</div></div>
+            <div class="store"><div class="store-head"><span class="label">Entry</span><span></span><span class="label">Product</span><span class="label price">Status</span></div><div class="record"><span class="label">ENTRY_002</span><div class="thumb"><img src="../public/records/entry-002.jpeg" alt="" /></div><div><p class="product">MISSEEN_002 T-SHIRT</p><span class="label">WHITE / SS / MALE</span><p class="description">LOW RES OUTPUT / INTERIOR</p></div><div class="label price">COMING SOON<br /><br />TBD</div></div></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

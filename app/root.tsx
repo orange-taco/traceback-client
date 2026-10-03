@@ -8,7 +8,6 @@ import {
 } from "react-router";
 import type { LinksFunction, MetaFunction } from "react-router";
 
-import { SiteFooter } from "~/components/site-footer";
 import { SiteHeader } from "~/components/site-header";
 import stylesheet from "~/styles/tailwind.css?url";
 
@@ -34,10 +33,9 @@ export function Layout({ children }: { children: ReactNode }) {
         <Links />
       </head>
       <body>
-        <div className="mx-auto flex min-h-screen max-w-site flex-col border-x border-ink/10 bg-paper/90">
+        <div className="flex min-h-screen flex-col bg-background">
           <SiteHeader />
           <main className="flex-1">{children}</main>
-          <SiteFooter />
         </div>
         <ScrollRestoration />
         <Scripts />

@@ -20,8 +20,8 @@ export function OptionSelector({
             className={cn(
               "focus-ring border px-3 py-3 font-mono text-xs uppercase tracking-meta transition",
               selected === option
-                ? "border-ink bg-ink text-paper"
-                : "border-ink/20 hover:border-ink",
+                ? "border-action-primary bg-action-soft text-action-primary"
+                : "border-border-default bg-surface text-text-secondary hover:border-action-primary hover:bg-surface-subtle hover:text-action-primary",
             )}
           >
             {option}

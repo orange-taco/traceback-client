@@ -1,5 +1,4 @@
-import type { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { useLoaderData } from "react-router";
+import type { Route } from "./+types/product-detail-page";
 
 import { Button, ButtonLink } from "~/components/button";
 import { ImageFrame } from "~/components/image-frame";
@@ -7,7 +6,7 @@ import { OptionSelector } from "~/components/option-selector";
 import { RecordMeta } from "~/components/record-meta";
 import { getEntryById, getProductBySlug } from "~/features/catalog/data/records";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params }: Route.LoaderArgs) {
   const product = getProductBySlug(params.slug ?? "");
   const entry = product ? getEntryById(product.entryId) : undefined;
 
@@ -18,16 +17,17 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { product, entry };
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  { title: data ? `${data.product.name} / TRACEBACK` : "TRACEBACK" },
+export const meta: Route.MetaFunction = ({ loaderData }) => [
+  { title: loaderData ? `${loaderData.product.name} / TRACEBACK` : "TRACEBACK" },
 ];
 
-export default function ProductDetailRoute() {
-  const { product, entry } = useLoaderData<typeof loader>();
-
+export default function ProductDetailRoute({
+  loaderData,
+}: Route.ComponentProps) {
+  const { product, entry } = loaderData;
   return (
     <div>
-      <header className="border-b border-ink/20 px-4 py-5 md:px-8">
+      <header className="border-b border-border-default px-4 py-5 md:px-8">
         <p className="meta">
           {entry.entryNumber} / {product.name}
         </p>
@@ -54,10 +54,10 @@ export default function ProductDetailRoute() {
             )}
           </div>
         </div>
-        <aside className="border-t border-ink/20 p-4 md:border-l md:border-t-0 md:p-8">
+        <aside className="border-t border-border-default p-4 md:border-l md:border-t-0 md:p-8">
           <div className="sticky top-28 grid gap-6">
             <RecordMeta entry={entry} />
-            <div className="border-t border-ink/20 pt-6">
+            <div className="border-t border-border-default pt-6">
               <p className="meta mb-3">{product.category}</p>
               <h1 className="font-mono text-2xl uppercase tracking-widebrand">
                 {product.name}
@@ -65,18 +65,18 @@ export default function ProductDetailRoute() {
               <p className="mt-4 font-mono text-sm uppercase tracking-meta">
                 {product.priceLabel}
               </p>
-              <p className="mt-2 font-mono text-[11px] uppercase tracking-meta text-muted">
+              <p className="mt-2 font-mono text-[11px] uppercase tracking-meta text-text-secondary">
                 {product.color} / {product.season} / {product.gender}
               </p>
             </div>
             <OptionSelector label="Size" options={product.sizes} selected="M" />
             <div>
               <p className="meta mb-3">Quantity</p>
-              <div className="grid grid-cols-3 border border-ink/20 font-mono text-xs uppercase tracking-meta">
+              <div className="grid grid-cols-3 border border-border-default font-mono text-xs uppercase tracking-meta">
                 <button type="button" className="focus-ring py-3">
                   -
                 </button>
-                <span className="border-x border-ink/20 py-3 text-center">1</span>
+                <span className="border-x border-border-default py-3 text-center">1</span>
                 <button type="button" className="focus-ring py-3">
                   +
                 </button>
@@ -91,7 +91,7 @@ export default function ProductDetailRoute() {
           </div>
         </aside>
       </section>
-      <section className="grid border-t border-ink/20 md:grid-cols-4">
+      <section className="grid border-t border-border-default md:grid-cols-4">
         {[
           ["Record Note", entry.title],
           ["Print Data", product.printData],
@@ -100,10 +100,10 @@ export default function ProductDetailRoute() {
         ].map(([title, body]) => (
           <article
             key={title}
-            className="border-b border-ink/20 p-4 md:border-b-0 md:border-r md:p-8 md:last:border-r-0"
+            className="border-b border-border-default p-4 md:border-b-0 md:border-r md:p-8 md:last:border-r-0"
           >
             <p className="meta mb-4">{title}</p>
-            <p className="text-sm leading-6 text-muted">{body}</p>
+            <p className="text-sm leading-6 text-text-secondary">{body}</p>
           </article>
         ))}
       </section>

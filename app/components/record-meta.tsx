@@ -10,11 +10,11 @@ export function RecordMeta({ entry }: { entry: ArchiveEntry }) {
   ];
 
   return (
-    <dl className="frame divide-y divide-ink/10">
+    <dl className="frame divide-y divide-border-default">
       {items.map(([label, value]) => (
         <div key={label} className="grid grid-cols-[96px_1fr] gap-4 px-4 py-3">
           <dt className="meta">{label}</dt>
-          <dd className="font-mono text-xs uppercase tracking-meta text-ink">
+          <dd className="font-mono text-xs uppercase tracking-meta text-text-primary">
             {value}
           </dd>
         </div>

@@ -1,12 +1,12 @@
-import type { LoaderFunctionArgs, MetaFunction } from "react-router";
-import { Link, useLoaderData } from "react-router";
+import { Link } from "react-router";
 
+import type { Route } from "./+types/archive-detail-page";
 import { ImageFrame } from "~/components/image-frame";
 import { PageHeading } from "~/components/page-heading";
 import { RecordMeta } from "~/components/record-meta";
 import { getEntryByNumber, products } from "~/features/catalog/data/records";
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params }: Route.LoaderArgs) {
   const entry = getEntryByNumber(params.entry ?? "");
   const relatedProduct = products.find((product) => product.entryId === entry?.id);
 
@@ -17,13 +17,16 @@ export async function loader({ params }: LoaderFunctionArgs) {
   return { entry, relatedProduct };
 }
 
-export const meta: MetaFunction<typeof loader> = ({ data }) => [
-  { title: data ? `${data.entry.entryNumber} / TRACEBACK` : "TRACEBACK" },
+export const meta: Route.MetaFunction = ({ loaderData }) => [
+  {
+    title: loaderData ? `${loaderData.entry.entryNumber} / TRACEBACK` : "TRACEBACK",
+  },
 ];
 
-export default function ArchiveDetailRoute() {
-  const { entry, relatedProduct } = useLoaderData<typeof loader>();
-
+export default function ArchiveDetailRoute({
+  loaderData,
+}: Route.ComponentProps) {
+  const { entry, relatedProduct } = loaderData;
   return (
     <div>
       <PageHeading
@@ -40,7 +43,7 @@ export default function ArchiveDetailRoute() {
             className="aspect-[4/5] md:aspect-[5/4]"
           />
         </div>
-        <aside className="border-t border-ink/20 p-4 md:border-l md:border-t-0 md:p-8">
+        <aside className="border-t border-border-default p-4 md:border-l md:border-t-0 md:p-8">
           <div className="sticky top-28 grid gap-6">
             <RecordMeta entry={entry} />
             <div className="frame p-4">
@@ -49,7 +52,7 @@ export default function ArchiveDetailRoute() {
                 {entry.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="border border-ink/20 px-3 py-2 font-mono text-[10px] uppercase tracking-meta text-muted"
+                    className="border border-border-default px-3 py-2 font-mono text-[10px] uppercase tracking-meta text-text-secondary"
                   >
                     {tag}
                   </span>
@@ -59,7 +62,7 @@ export default function ArchiveDetailRoute() {
             {relatedProduct ? (
               <Link
                 to={`/store/${relatedProduct.slug}`}
-                className="focus-ring border border-ink bg-ink px-5 py-3 text-center font-mono text-[11px] uppercase tracking-meta text-paper transition hover:border-signal hover:bg-signal"
+                className="focus-ring border border-border-default bg-surface px-5 py-3 text-center font-mono text-[11px] uppercase tracking-meta text-text-primary transition hover:border-action-primary hover:bg-surface-subtle hover:text-action-primary"
               >
                 Related Product: {relatedProduct.name}
               </Link>

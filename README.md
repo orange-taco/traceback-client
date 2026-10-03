@@ -1,6 +1,6 @@
 # TRACEBACK Client
 
-React Router v7 Framework Mode + Tailwind storefront wireframe for `TRACEBACK`.
+React Router Framework Mode + Tailwind storefront wireframe for `TRACEBACK`.
 
 ## Commands
 
@@ -10,13 +10,24 @@ npm run dev
 npm run typecheck
 ```
 
+Local auth uses same-origin browser requests. Vite proxies `/_allauth` and
+`/accounts` to Django at `http://localhost:8000`.
+
+Vercel serves the React Router app. When the Django backend is available,
+`vercel.ts` routes authentication and API requests to the matching HTTPS origin
+from `DJANGO_ORIGIN`. Set it in the Vercel project; `.env.example` documents the
+format. See [`docs/vercel-deployment.md`](docs/vercel-deployment.md) for setup
+and verification.
+
 ## Structure
 
 - `app/components`: reusable visual and commerce components
-- `app/data`: temporary static records/products before API integration
-- `app/routes`: route modules matching `app/routes.ts`
+- `app/features`: feature-owned pages, route modules, domain components, and data
+- `app/routes.ts`: explicit URL-to-route-module map
+- `app/routes`: resource routes or framework exceptions only
 - `app/styles/tailwind.css`: design tokens and base styles
 - `docs/brand-concept.md`: brand direction and visual language
+- `docs/frontend-conventions.md`: routing and feature boundary conventions
 - `docs/wireframe.md`: page structure and frontend implementation reference
 - `public/records`: first drop reference images
 

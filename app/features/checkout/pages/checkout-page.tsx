@@ -12,7 +12,7 @@ export default function CheckoutRoute() {
 
   return (
     <div>
-      <header className="border-b border-ink/20 px-4 py-8 md:px-8">
+      <header className="border-b border-border-default px-4 py-8 md:px-8">
         <p className="meta mb-4">Guest Checkout</p>
         <h1 className="font-mono text-3xl uppercase tracking-widebrand">
           Checkout
@@ -26,12 +26,12 @@ export default function CheckoutRoute() {
             <p className="meta mb-3">Coupon</p>
             <div className="grid gap-2 md:grid-cols-[1fr_120px]">
               <input
-                className="focus-ring border border-ink/20 bg-transparent px-4 py-3 font-mono text-xs uppercase tracking-meta"
+                className="focus-ring border border-border-default bg-surface px-4 py-3 font-mono text-xs uppercase tracking-meta"
                 placeholder="TRACE10"
               />
               <button
                 type="button"
-                className="focus-ring border border-ink/30 px-4 py-3 font-mono text-[11px] uppercase tracking-meta"
+                className="focus-ring border border-border-default px-4 py-3 font-mono text-[11px] uppercase tracking-meta"
               >
                 Apply
               </button>
@@ -44,14 +44,14 @@ export default function CheckoutRoute() {
                 <button
                   key={method}
                   type="button"
-                  className="focus-ring border border-ink/20 px-4 py-3 font-mono text-xs uppercase tracking-meta"
+                  className="focus-ring border border-border-default px-4 py-3 font-mono text-xs uppercase tracking-meta"
                 >
                   {method}
                 </button>
               ))}
             </div>
           </section>
-          <section className="grid gap-3 border-y border-ink/20 py-5 font-mono text-[11px] uppercase tracking-meta">
+          <section className="grid gap-3 border-y border-border-default py-5 font-mono text-[11px] uppercase tracking-meta">
             <label className="flex gap-3">
               <input type="checkbox" /> Purchase terms
             </label>
@@ -60,25 +60,25 @@ export default function CheckoutRoute() {
             </label>
           </section>
         </form>
-        <aside className="border-t border-ink/20 p-4 md:border-l md:border-t-0 md:p-8">
+        <aside className="border-t border-border-default p-4 md:border-l md:border-t-0 md:p-8">
           <div className="sticky top-28 grid gap-6">
             <div className="frame p-4">
               <p className="meta mb-4">Order Records</p>
               <p className="font-mono text-sm uppercase tracking-meta">
                 {product.name}
               </p>
-              <p className="mt-2 font-mono text-[11px] uppercase tracking-meta text-muted">
+              <p className="mt-2 font-mono text-[11px] uppercase tracking-meta text-text-secondary">
                 {entry.entryNumber} / BLACK / M / 1
               </p>
             </div>
-            <div className="divide-y divide-ink/20 border-y border-ink/20 font-mono text-xs uppercase tracking-meta">
+            <div className="divide-y divide-border-default border-y border-border-default font-mono text-xs uppercase tracking-meta">
               {[
                 ["Subtotal", product.priceLabel],
                 ["Shipping", "KRW 0,000"],
                 ["Total", product.priceLabel],
               ].map(([label, value]) => (
                 <div key={label} className="flex justify-between py-4">
-                  <span className="text-muted">{label}</span>
+                  <span className="text-text-secondary">{label}</span>
                   <span>{value}</span>
                 </div>
               ))}
@@ -99,7 +99,7 @@ function Fieldset({ title, fields }: { title: string; fields: string[] }) {
         {fields.map((field) => (
           <input
             key={field}
-            className="focus-ring border border-ink/20 bg-transparent px-4 py-3 font-mono text-xs uppercase tracking-meta"
+            className="focus-ring border border-border-default bg-surface px-4 py-3 font-mono text-xs uppercase tracking-meta"
             placeholder={field}
           />
         ))}
