@@ -36,6 +36,10 @@ export default function AccountPage() {
 
   useEffect(() => {
     getCurrentSession().then((response) => {
+      if (response.status === 401 && !response.meta.is_authenticated) {
+        navigate("/auth/login", { replace: true });
+        return;
+      }
       if (response.status >= 400) {
         throw new Error("Session request failed");
       }
